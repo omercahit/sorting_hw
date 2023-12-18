@@ -1,5 +1,6 @@
 import timeit
 import numpy as np
+from numba import jit, cuda
 
 random101 = np.random.randint(10**1, size = (10**1))
 random102 = np.random.randint(10**2, size = (10**2))
@@ -25,6 +26,7 @@ psorted103 = np.concatenate((np.arange(0,(10**3-10**2)), np.random.randint(10**3
 psorted104 = np.concatenate((np.arange(0,(10**4-10**3)), np.random.randint(10**4, size = 10**3)))
 psorted105 = np.concatenate((np.arange(0,(10**5-10**4)), np.random.randint(10**5, size = 10**4)))
 
+@jit(target_backend='cuda')
 def bubbleSort(arr):
     n = len(arr)
 
@@ -44,6 +46,7 @@ def bubbleSort(arr):
         if (swapped == False):
             break
 
+@jit(target_backend='cuda')
 def insertionSort(arr):
 
     # Traverse through 1 to len(arr)
@@ -60,6 +63,7 @@ def insertionSort(arr):
                 j -= 1
         arr[j + 1] = key
 
+@jit(target_backend='cuda')
 def partition(array, low, high):
 
     # Choose the rightmost element as pivot
@@ -87,6 +91,7 @@ def partition(array, low, high):
     # Return the position from where partition is done
     return i + 1
 
+@jit(target_backend='cuda')
 def quickSort(array, low, high):
     if low < high:
 
@@ -102,9 +107,8 @@ def quickSort(array, low, high):
         quickSort(array, pi + 1, high)
 
 bubble_sort_time = timeit.timeit("bubbleSort(random105.copy())", globals=globals(), number=1)
-insertion_sort_time = timeit.timeit("insertionSort(random105.copy())", globals=globals(), number=1)
-quick_sort_time = timeit.timeit("quickSort(random105.copy(), 0, len(random105.copy()) - 1)", globals=globals(), number=1)
-
 print(f"Bubble Sort Time: {bubble_sort_time:.6f} seconds")
+insertion_sort_time = timeit.timeit("insertionSort(random105.copy())", globals=globals(), number=1)
 print(f"Insertion Sort Time: {insertion_sort_time:.6f} seconds")
+quick_sort_time = timeit.timeit("quickSort(random105.copy(), 0, len(random105.copy()) - 1)", globals=globals(), number=1)
 print(f"Quick Sort Time: {quick_sort_time:.6f} seconds")
