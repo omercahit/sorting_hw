@@ -1,6 +1,12 @@
 import timeit
 import numpy as np
 from numba import jit, cuda
+import pandas as pd
+import sys
+import warnings
+
+warnings.filterwarnings("ignore")
+sys.setrecursionlimit(10**6)
 
 random101 = np.random.randint(10**1, size = (10**1))
 random102 = np.random.randint(10**2, size = (10**2))
@@ -64,51 +70,149 @@ def insertionSort(arr):
         arr[j + 1] = key
 
 @jit(target_backend='cuda')
-def partition(array, low, high):
+def quickSort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quickSort(left) + middle + quickSort(right)
 
-    # Choose the rightmost element as pivot
-    pivot = array[high]
+b101r = timeit.timeit("bubbleSort(random101.copy())", globals=globals(), number=10)
+i101r = timeit.timeit("insertionSort(random101.copy())", globals=globals(), number=10)
+q101r = timeit.timeit("quickSort(random101.copy())", globals=globals(), number=10)
 
-    # Pointer for greater element
-    i = low - 1
+print("Random Sorted Arrays 1 Are Done.")
 
-    # Traverse through all elements
-    # compare each element with pivot
-    for j in range(low, high):
-        if array[j] <= pivot:
+b102r = timeit.timeit("bubbleSort(random102.copy())", globals=globals(), number=10)
+i102r = timeit.timeit("insertionSort(random102.copy())", globals=globals(), number=10)
+q102r = timeit.timeit("quickSort(random102.copy())", globals=globals(), number=10)
 
-            # If element smaller than pivot is found
-            # swap it with the greater element pointed by i
-            i = i + 1
+print("Random Sorted Arrays 2 Are Done.")
 
-            # Swapping element at i with element at j
-            (array[i], array[j]) = (array[j], array[i])
+b103r = timeit.timeit("bubbleSort(random103.copy())", globals=globals(), number=10)
+i103r = timeit.timeit("insertionSort(random103.copy())", globals=globals(), number=10)
+q103r = timeit.timeit("quickSort(random103.copy())", globals=globals(), number=10)
 
-    # Swap the pivot element with
-    # the greater element specified by i
-    (array[i + 1], array[high]) = (array[high], array[i + 1])
+print("Random Sorted Arrays 3 Are Done.")
 
-    # Return the position from where partition is done
-    return i + 1
+b104r = timeit.timeit("bubbleSort(random104.copy())", globals=globals(), number=10)
+i104r = timeit.timeit("insertionSort(random104.copy())", globals=globals(), number=10)
+q104r = timeit.timeit("quickSort(random104.copy())", globals=globals(), number=10)
 
-@jit(target_backend='cuda')
-def quickSort(array, low, high):
-    if low < high:
+print("Random Sorted Arrays 4 Are Done.")
 
-        # Find pivot element such that
-        # element smaller than pivot are on the left
-        # element greater than pivot are on the right
-        pi = partition(array, low, high)
+b105r = timeit.timeit("bubbleSort(random105.copy())", globals=globals(), number=10)
+i105r = timeit.timeit("insertionSort(random105.copy())", globals=globals(), number=10)
+q105r = timeit.timeit("quickSort(random105.copy())", globals=globals(), number=10)
 
-        # Recursive call on the left of pivot
-        quickSort(array, low, pi - 1)
+print("Random Sorted Arrays 5 Are Done.")
 
-        # Recursive call on the right of pivot
-        quickSort(array, pi + 1, high)
+random_sorted = np.array([b101r, i101r, q101r, b102r, i102r, q102r, b103r, i103r, q103r, b104r, i104r, q104r, b105r, i105r, q105r])
 
-bubble_sort_time = timeit.timeit("bubbleSort(random105.copy())", globals=globals(), number=1)
-print(f"Bubble Sort Time: {bubble_sort_time:.6f} seconds")
-insertion_sort_time = timeit.timeit("insertionSort(random105.copy())", globals=globals(), number=1)
-print(f"Insertion Sort Time: {insertion_sort_time:.6f} seconds")
-quick_sort_time = timeit.timeit("quickSort(random105.copy(), 0, len(random105.copy()) - 1)", globals=globals(), number=1)
-print(f"Quick Sort Time: {quick_sort_time:.6f} seconds")
+b101f = timeit.timeit("bubbleSort(fsorted101.copy())", globals=globals(), number=10)
+i101f = timeit.timeit("insertionSort(fsorted101.copy())", globals=globals(), number=10)
+q101f = timeit.timeit("quickSort(fsorted101.copy())", globals=globals(), number=10)
+
+print("Fully Sorted Arrays 1 Are Done.")
+
+b102f = timeit.timeit("bubbleSort(fsorted102.copy())", globals=globals(), number=10)
+i102f = timeit.timeit("insertionSort(fsorted102.copy())", globals=globals(), number=10)
+q102f = timeit.timeit("quickSort(fsorted102.copy())", globals=globals(), number=10)
+
+print("Fully Sorted Arrays 2 Are Done.")
+
+b103f = timeit.timeit("bubbleSort(fsorted103.copy())", globals=globals(), number=10)
+i103f = timeit.timeit("insertionSort(fsorted103.copy())", globals=globals(), number=10)
+q103f = timeit.timeit("quickSort(fsorted103.copy())", globals=globals(), number=10)
+
+print("Fully Sorted Arrays 3 Are Done.")
+
+b104f = timeit.timeit("bubbleSort(fsorted104.copy())", globals=globals(), number=10)
+i104f = timeit.timeit("insertionSort(fsorted104.copy())", globals=globals(), number=10)
+q104f = timeit.timeit("quickSort(fsorted104.copy())", globals=globals(), number=10)
+
+print("Fully Sorted Arrays 4 Are Done.")
+
+b105f = timeit.timeit("bubbleSort(fsorted105.copy())", globals=globals(), number=10)
+i105f = timeit.timeit("insertionSort(fsorted105.copy())", globals=globals(), number=10)
+q105f = timeit.timeit("quickSort(fsorted105.copy())", globals=globals(), number=10)
+
+print("Fully Sorted Arrays 5 Are Done.")
+
+fully_sorted = np.array([b101f, i101f, q101f, b102f, i102f, q102f, b103f, i103f, q103f, b104f, i104f, q104r, b105f, i105r, q105f])
+
+b101rs = timeit.timeit("bubbleSort(rsorted101.copy())", globals=globals(), number=10)
+i101rs = timeit.timeit("insertionSort(rsorted101.copy())", globals=globals(), number=10)
+q101rs = timeit.timeit("quickSort(rsorted101.copy())", globals=globals(), number=10)
+
+print("Reverse Sorted Arrays 1 Are Done.")
+
+b102rs = timeit.timeit("bubbleSort(rsorted102.copy())", globals=globals(), number=10)
+i102rs = timeit.timeit("insertionSort(rsorted102.copy())", globals=globals(), number=10)
+q102rs = timeit.timeit("quickSort(rsorted102.copy())", globals=globals(), number=10)
+
+print("Reverse Sorted Arrays 2 Are Done.")
+
+b103rs = timeit.timeit("bubbleSort(rsorted103.copy())", globals=globals(), number=10)
+i103rs = timeit.timeit("insertionSort(rsorted103.copy())", globals=globals(), number=10)
+q103rs = timeit.timeit("quickSort(rsorted103.copy())", globals=globals(), number=10)
+
+print("Reverse Sorted Arrays 3 Are Done.")
+
+b104rs = timeit.timeit("bubbleSort(rsorted104.copy())", globals=globals(), number=10)
+i104rs = timeit.timeit("insertionSort(rsorted104.copy())", globals=globals(), number=10)
+q104rs = timeit.timeit("quickSort(rsorted104.copy())", globals=globals(), number=10)
+
+print("Reverse Sorted Arrays 4 Are Done.")
+
+b105rs = timeit.timeit("bubbleSort(rsorted105.copy())", globals=globals(), number=10)
+i105rs = timeit.timeit("insertionSort(rsorted105.copy())", globals=globals(), number=10)
+q105rs = timeit.timeit("quickSort(rsorted105.copy())", globals=globals(), number=10)
+
+print("Reverse Sorted Arrays 5 Are Done.")
+
+reverse_sorted = np.array([b101rs, i101rs, q101rs, b102rs, i102rs, q102rs, b103rs, i103rs, q103rs, b104rs, i104rs, q104rs, b105rs, i105rs, q105rs])
+
+b101p = timeit.timeit("bubbleSort(psorted101.copy())", globals=globals(), number=10)
+i101p = timeit.timeit("insertionSort(psorted101.copy())", globals=globals(), number=10)
+q101p = timeit.timeit("quickSort(psorted101.copy())", globals=globals(), number=10)
+
+print("Partially Sorted Arrays 1 Are Done.")
+
+b102p = timeit.timeit("bubbleSort(psorted102.copy())", globals=globals(), number=10)
+i102p = timeit.timeit("insertionSort(psorted102.copy())", globals=globals(), number=10)
+q102p = timeit.timeit("quickSort(psorted102.copy())", globals=globals(), number=10)
+
+print("Partially Sorted Arrays 2 Are Done.")
+
+b103p = timeit.timeit("bubbleSort(psorted103.copy())", globals=globals(), number=10)
+i103p = timeit.timeit("insertionSort(psorted103.copy())", globals=globals(), number=10)
+q103p = timeit.timeit("quickSort(psorted103.copy())", globals=globals(), number=10)
+
+print("Partially Sorted Arrays 3 Are Done.")
+
+b104p = timeit.timeit("bubbleSort(psorted104.copy())", globals=globals(), number=10)
+i104p = timeit.timeit("insertionSort(psorted104.copy())", globals=globals(), number=10)
+q104p = timeit.timeit("quickSort(psorted104.copy())", globals=globals(), number=10)
+
+print("Partially Sorted Arrays 4 Are Done.")
+
+b105p = timeit.timeit("bubbleSort(psorted105.copy())", globals=globals(), number=10)
+i105p = timeit.timeit("insertionSort(psorted105.copy())", globals=globals(), number=10)
+q105p = timeit.timeit("quickSort(psorted105.copy())", globals=globals(), number=10)
+
+print("Partially Sorted Arrays 5 Are Done.")
+
+partially_sorted = np.array([b101p, i101p, q101p, b102p, i102p, q102p, b103p, i103p, q103p, b104p, i104p, q104p, b105p, i105p, q105p])
+
+index_names = ["Random", "Fully Sorted", "Reverse Sorted", "Partially Sorted"]
+col_names = ["Bubble 10^1", "Insertion 10^1", "Quick 10^1", "Bubble 10^2", "Insertion 10^2", "Quick 10^2",
+               "Bubble 10^3", "Insertion 10^3", "Quick 10^3", "Bubble 10^4", "Insertion 10^4", "Quick 10^4",
+               "Bubble 10^5", "Insertion 10^5", "Quick 10^5"]
+
+df = pd.DataFrame(data = np.array([random_sorted, fully_sorted, reverse_sorted, partially_sorted]),  
+                  index = index_names,  
+                  columns = col_names)
+df.to_csv("Sorting_Results.csv")
